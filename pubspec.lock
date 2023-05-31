@@ -277,6 +277,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.1.1"
+  helpers:
+    dependency: transitive
+    description:
+      name: helpers
+      sha256: d82a48e5acd45e3650af20779cf61326dd9c1aaf729fdab4ae721dc48f28b840
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.3"
   http:
     dependency: transitive
     description:
@@ -421,6 +429,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.5"
+  scroll_navigation:
+    dependency: "direct main"
+    description:
+      name: scroll_navigation
+      sha256: e252abf1a29c801154df2cee44d62a8fb70c3ca6b1da962c555bf445a6b50e7a
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.2"
   sky_engine:
     dependency: transitive
     description: flutter
