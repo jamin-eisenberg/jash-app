@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jash/pages/home_page.dart';
+import 'package:jash/app_state.dart';
 import 'package:jash/pages/profile_page.dart';
+import 'package:jash/pages/whiteboard/whiteboard_page.dart';
+import 'package:provider/provider.dart';
 import 'package:scroll_navigation/scroll_navigation.dart';
 
 class MainPage extends StatelessWidget {
@@ -8,25 +10,29 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return ScrollNavigation(
-          items: const [
-            ScrollNavigationItem(
-              title: 'Home',
-              icon: Icon(Icons.home),
-            ),
-            ScrollNavigationItem(
-              title: 'Profile',
-              icon: Icon(Icons.account_circle),
-            ),
-          ],
-          pages: const [HomePage(), ProfilePage()],
-          physics: true,
-          identiferStyle: const NavigationIdentiferStyle(
-              position: IdentifierPosition.topAndRight),
-        );
-      },
+    return ScrollNavigation(
+      items: const [
+        ScrollNavigationItem(
+          title: 'Whiteboard',
+          icon: Icon(Icons.edit_note),
+        ),
+        ScrollNavigationItem(
+          title: 'Profile',
+          icon: Icon(Icons.account_circle),
+        ),
+      ],
+      pages: [
+        Consumer<ApplicationState>(
+            builder: (context, appState, _) {
+              if (appState.loggedIn) {
+                WhiteboardPage(messages: appState., )
+              }
+            }),
+        const ProfilePage()
+      ],
+      physics: true,
+      identiferStyle: const NavigationIdentiferStyle(
+          position: IdentifierPosition.topAndRight),
     );
   }
 }
