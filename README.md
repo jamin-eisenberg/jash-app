@@ -6,7 +6,7 @@ An app for the JASH apartment to keep track of various things.
 
 - Food planning: 
   - calendar with what we ate/will eat on a given day
-  - ratings/notes for recipes
+  - ratings/notes for recipes, link recipes
 - Food tracking:
   - noting what food is communal/belongs to whom
 - Location tracking
@@ -16,3 +16,5 @@ An app for the JASH apartment to keep track of various things.
   - can be simplified - the idea is to fulfill Aidan's desire for animated emojis
 - Daily emotion check-in
 - Listonic/splitwise clone
+- Google Calendar functionality (see when H & J are out on Saturday)
+- Whiteboard - general
