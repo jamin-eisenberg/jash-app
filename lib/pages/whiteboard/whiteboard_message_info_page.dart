@@ -36,70 +36,92 @@ class _WhiteboardMesssageInfoPageState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Message Info')),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Message text: '),
-          Form(
-            key: _formKey,
-            child: Row(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Tooltip(
+                message: '(User ID: ${widget.message.userId})',
+                child: Text('Created by: ${widget.message.username}')),
+            Text(
+                'Created on: ${DateFormat().format(widget.message.timePosted)}'),
+            Row(
               children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _controller,
+                const Text(
+                  'Text: ',
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+                Form(
+                  key: _formKey,
+                  child: Expanded(
+                    child: TextFormField(
+                      controller: _controller,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-          Text(
-              'Created by: ${widget.message.username} (user ID: ${widget.message.userId})'),
-          Text('Created on: ${DateFormat().format(widget.message.timePosted)}'),
-          Row(
-            children: [
-              ValueListenableBuilder(
-                builder: (context, value, _) {
-                  return OutlinedButton(
-                    onPressed: widget.message.text == value.text
-                        ? null
-                        : () {
-                            widget.editMessage(WhiteboardMessage(
-                                timePosted: widget.message.timePosted,
-                                username: widget.message.username,
-                                userId: widget.message.userId,
-                                dbId: widget.message.dbId,
-                                text: value.text));
-                            Navigator.pop(context);
-                          },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.save),
-                        Text('Save'),
-                      ],
-                    ),
-                  );
-                },
-                valueListenable: _controller,
-              ),
-              OutlinedButton(
-                  style: ButtonStyle(
-                      iconColor:
-                          MaterialStateProperty.resolveWith((_) => Colors.red),
-                      foregroundColor:
-                          MaterialStateProperty.resolveWith((_) => Colors.red)),
-                  onPressed: () {
-                    widget.deleteMessage(widget.message);
-                    Navigator.pop(context);
-                  },
-                  child: const Row(
-                    children: [
-                      Icon(Icons.delete_forever),
-                      Text('Delete'),
-                    ],
-                  )),
-            ],
-          )
-        ],
+            const SizedBox(
+              height: 16,
+            ),
+            Row(
+              children: [
+                Flexible(
+                  child: ValueListenableBuilder(
+                    builder: (context, value, _) {
+                      return OutlinedButton(
+                        onPressed: widget.message.text == value.text
+                            ? null
+                            : () {
+                                widget.editMessage(WhiteboardMessage(
+                                    timePosted: widget.message.timePosted,
+                                    username: widget.message.username,
+                                    userId: widget.message.userId,
+                                    dbId: widget.message.dbId,
+                                    text: value.text));
+                                Navigator.pop(context);
+                              },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.save),
+                            Text('Save'),
+                          ],
+                        ),
+                      );
+                    },
+                    valueListenable: _controller,
+                  ),
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+                Flexible(
+                  child: OutlinedButton(
+                      style: ButtonStyle(
+                          iconColor: MaterialStateProperty.resolveWith(
+                              (_) => Colors.red),
+                          foregroundColor: MaterialStateProperty.resolveWith(
+                              (_) => Colors.red)),
+                      onPressed: () {
+                        widget.deleteMessage(widget.message);
+                        Navigator.pop(context);
+                      },
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.delete_forever),
+                          Text('Delete'),
+                        ],
+                      )),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

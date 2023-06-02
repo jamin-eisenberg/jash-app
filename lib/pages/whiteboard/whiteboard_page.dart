@@ -39,21 +39,6 @@ class _WhiteboardPageState extends State<WhiteboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    messageLongPressRightClickHandler(WhiteboardMessage message) {
-      return () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => WhiteboardMesssageInfoPage(
-              message: message,
-              editMessage: widget.editMessage,
-              deleteMessage: widget.deleteMessage,
-            ),
-          ),
-        );
-      };
-    }
-
     return SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,8 +95,18 @@ class _WhiteboardPageState extends State<WhiteboardPage> {
                 for (var e in widget.messages)
                   GestureDetector(
                     key: Key(e.dbId),
-                    onLongPress: messageLongPressRightClickHandler(e),
-                    onSecondaryTap: messageLongPressRightClickHandler(e),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => WhiteboardMesssageInfoPage(
+                            message: e,
+                            editMessage: widget.editMessage,
+                            deleteMessage: widget.deleteMessage,
+                          ),
+                        ),
+                      );
+                    },
                     child: ListTile(title: Text(e.text)),
                   ),
               ],
