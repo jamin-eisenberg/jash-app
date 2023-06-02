@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jash/pages/home_page.dart';
 import 'package:jash/pages/profile_page.dart';
+import 'package:jash/pages/meal_planning_page.dart';
 import 'package:scroll_navigation/scroll_navigation.dart';
 
 class MainPage extends StatelessWidget {
@@ -13,6 +14,10 @@ class MainPage extends StatelessWidget {
         return ScrollNavigation(
           items: const [
             ScrollNavigationItem(
+              title: 'Meal Planning',
+              icon: Icon(Icons.shopping_basket),
+            ),
+            ScrollNavigationItem(
               title: 'Home',
               icon: Icon(Icons.home),
             ),
@@ -21,7 +26,7 @@ class MainPage extends StatelessWidget {
               icon: Icon(Icons.account_circle),
             ),
           ],
-          pages: const [HomePage(), ProfilePage()],
+          pages: const [MealPlanningPage(), HomePage(), ProfilePage()],
           physics: true,
           identiferStyle: const NavigationIdentiferStyle(
               position: IdentifierPosition.topAndRight),
