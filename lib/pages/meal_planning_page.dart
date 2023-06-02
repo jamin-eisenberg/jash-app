@@ -3,40 +3,21 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-/// Example event class.
-class Event {
-  final String title;
+import '../shared/utils.dart';
 
-  const Event(this.title);
-
-  @override
-  String toString() => title;
-}
-
-final kToday = DateTime.now();
+final kToday = DateTime(2023, 6, 1);
 final kFirstDay = DateTime(kToday.year, kToday.month - 2, kToday.day);
 final kLastDay = DateTime(kToday.year, kToday.month + 2, kToday.day);
 
-/// Example events.
-final kEvents = LinkedHashMap<DateTime, List<Event>>(
+final meals = LinkedHashMap<DateTime, Meal>(
   equals: isSameDay,
-  hashCode: getHashCode,
-)..addAll(_kEventSource);
+  hashCode: (DateTime key) => key.day * 1000000 + key.month * 10000 + key.year,
+)..addAll(mealsSource);
 
-final _kEventSource = {
-  for (var item in List.generate(50, (index) => index))
-    DateTime.utc(kFirstDay.year, kFirstDay.month, item * 5): List.generate(
-        item % 4 + 1, (index) => Event('Event $item | ${index + 1}'))
-}..addAll({
-    kToday: [
-      const Event('Today\'s Event 1'),
-      const Event('Today\'s Event 2'),
-    ],
-  });
-
-int getHashCode(DateTime key) {
-  return key.day * 1000000 + key.month * 10000 + key.year;
-}
+final mealsSource = {
+  for (var day in List.generate(6, (index) => index))
+    DateTime.utc(kToday.year, kToday.month, kToday.day - day): Meal('Meal $day')
+};
 
 class MealPlanningPage extends StatefulWidget {
   const MealPlanningPage({super.key});
@@ -48,25 +29,28 @@ class MealPlanningPage extends StatefulWidget {
 class MealPlanningPageState extends State<MealPlanningPage> {
   final CalendarFormat _calendarFormat = CalendarFormat.twoWeeks;
 
-  final ValueNotifier<List<Event>> _selectedEvents = ValueNotifier([]);
+  ValueNotifier<Meal?> _selectedMeal = ValueNotifier(null);
   DateTime _focusedDay = kToday;
   DateTime? _selectedDay;
 
   @override
   void dispose() {
-    _selectedEvents.dispose();
     super.dispose();
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
+  List<Meal> _getMealsForDay(DateTime day) {
     // Implementation example
-    return kEvents[day] ?? [];
+    if (meals[day] != null) {
+      return [meals[day]!];
+    }
+    return [];
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     setState(() {
       _focusedDay = selectedDay;
-      _selectedDay = focusedDay;
+      _selectedDay = selectedDay;
+      _selectedMeal = ValueNotifier(meals[_selectedDay]);
     });
   }
 
@@ -75,10 +59,14 @@ class MealPlanningPageState extends State<MealPlanningPage> {
     return Scaffold(
       body: Column(
         children: [
-          TableCalendar<Event>(
+          TableCalendar<Meal>(
             headerStyle: const HeaderStyle(formatButtonVisible: false),
             calendarFormat: _calendarFormat,
             startingDayOfWeek: StartingDayOfWeek.sunday,
+            calendarStyle: const CalendarStyle(
+                isTodayHighlighted: true,
+                outsideDaysVisible: false,
+                markerDecoration: IconDecoration(Icons.check_circle)),
             focusedDay: _focusedDay,
             firstDay: kFirstDay,
             lastDay: kLastDay,
@@ -87,30 +75,26 @@ class MealPlanningPageState extends State<MealPlanningPage> {
             onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
-            eventLoader: _getEventsForDay,
+            eventLoader: _getMealsForDay,
           ),
           const SizedBox(height: 8.0),
           Expanded(
-            child: ValueListenableBuilder<List<Event>>(
-              valueListenable: _selectedEvents,
+            child: ValueListenableBuilder<Meal?>(
+              valueListenable: _selectedMeal,
               builder: (context, value, _) {
                 return ListView.builder(
-                  itemCount: value.length,
+                  itemCount: 1,
                   itemBuilder: (context, index) {
                     return Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 4.0,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: ListTile(
-                        onTap: () => print('${value[index]}'),
-                        title: Text('${value[index]}'),
-                      ),
-                    );
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 12.0,
+                          vertical: 4.0,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: Text('${value?.title}'));
                   },
                 );
               },
