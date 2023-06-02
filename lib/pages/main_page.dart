@@ -26,6 +26,7 @@ class MainPage extends StatelessWidget {
           if (appState.loggedIn) {
             return WhiteboardPage(
               addMessage: (m) => appState.addWhiteboardMessage(m),
+              reorderMessages: (ms) => appState.updateWhiteboardMessageOrder(ms),
               messages: appState.whiteboardMessages,
             );
           } else {

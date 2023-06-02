@@ -1,14 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:jash/pages/whiteboard/whiteboard_message.dart';
 import 'package:jash/widgets/widgets.dart';
 
 class WhiteboardPage extends StatefulWidget {
   const WhiteboardPage(
-      {super.key, required this.addMessage, required this.messages});
+      {super.key,
+      required this.addMessage,
+      required this.messages,
+      required this.reorderMessages});
 
   final FutureOr<void> Function(String message) addMessage;
-  final List<String> messages;
+  final FutureOr<void> Function(List<WhiteboardMessage> message)
+      reorderMessages;
+  final List<WhiteboardMessage> messages;
 
   @override
   State<WhiteboardPage> createState() => _WhiteboardPageState();
@@ -59,7 +65,25 @@ class _WhiteboardPageState extends State<WhiteboardPage> {
           const SizedBox(
             height: 8,
           ),
-          for (var e in widget.messages) Paragraph(e),
+          Expanded(
+            child: ReorderableListView(
+              onReorder: (oldIndex, newIndex) {
+                setState(() {
+                  if (oldIndex < newIndex) {
+                    newIndex -= 1;
+                  }
+
+                  WhiteboardMessage item = widget.messages.removeAt(oldIndex);
+                  widget.messages.insert(newIndex, item);
+                  widget.reorderMessages(widget.messages);
+                });
+              },
+              children: [
+                for (var e in widget.messages)
+                  ListTile(key: Key(e.dbId), title: Text(e.message))
+              ],
+            ),
+          ),
           const SizedBox(
             height: 8,
           ),
