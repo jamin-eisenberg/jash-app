@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart'
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jash/pages/whiteboard/whiteboard_message.dart';
+import 'package:jash/pages/notepad/notepad_message.dart';
 
 import 'firebase_options.dart';
 
@@ -30,18 +30,18 @@ class ApplicationState extends ChangeNotifier {
     FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
         _loggedIn = true;
-        _whiteboardSubscription = FirebaseFirestore.instance
-            .collection('whiteboard')
+        _notepadSubscription = FirebaseFirestore.instance
+            .collection('notepad')
             .doc('messages')
             .collection('messages')
             .orderBy('order')
             .snapshots()
             .listen((snapshot) {
-          _whiteboardMessages = [];
+          _notepadMessages = [];
           for (final document in snapshot.docs) {
             Map<String, dynamic> data = document.data();
-            _whiteboardMessages.add(
-              WhiteboardMessage(
+            _notepadMessages.add(
+              NotepadMessage(
                 dbId: document.id,
                 text: data['text'] as String,
                 userId: data['userId'] as String,
@@ -55,14 +55,14 @@ class ApplicationState extends ChangeNotifier {
         });
       } else {
         _loggedIn = false;
-        _whiteboardMessages = [];
-        _whiteboardSubscription?.cancel();
+        _notepadMessages = [];
+        _notepadSubscription?.cancel();
       }
       notifyListeners();
     });
   }
 
-  void updateWhiteboardMessagesOrder(List<WhiteboardMessage> messages) {
+  void updateNotepadMessagesOrder(List<NotepadMessage> messages) {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
@@ -70,41 +70,39 @@ class ApplicationState extends ChangeNotifier {
     FirebaseFirestore.instance.runTransaction((_) async {
       for (var (i, message) in messages.indexed) {
         FirebaseFirestore.instance
-            .doc("whiteboard/messages/messages/${message.dbId}")
+            .doc("notepad/messages/messages/${message.dbId}")
             .update({'order': i});
       }
     });
   }
 
-  void updateWhiteboardMessage(WhiteboardMessage message) async {
+  void updateNotepadMessage(NotepadMessage message) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
 
     var messageDoc = FirebaseFirestore.instance
-        .doc('whiteboard/messages/messages/${message.dbId}');
+        .doc('notepad/messages/messages/${message.dbId}');
     messageDoc.update({'text': message.text});
   }
 
-  void deleteWhiteboardMessage(WhiteboardMessage message) async {
+  void deleteNotepadMessage(NotepadMessage message) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
 
     var messageDoc = FirebaseFirestore.instance
-        .doc('whiteboard/messages/messages/${message.dbId}');
+        .doc('notepad/messages/messages/${message.dbId}');
     messageDoc.delete();
   }
 
-  Future<WhiteboardMessage> addWhiteboardMessage(String message) async {
+  Future<NotepadMessage> addNotepadMessage(String message) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
 
-    // TODO allow deletion/editing/info
-
     var messagesCollection =
-        FirebaseFirestore.instance.collection('whiteboard/messages/messages');
+        FirebaseFirestore.instance.collection('notepad/messages/messages');
 
     int currentHighestOrder = (await messagesCollection.count().get()).count - 1;
 
@@ -121,7 +119,7 @@ class ApplicationState extends ChangeNotifier {
       'userId': userId,
     });
 
-    return WhiteboardMessage(
+    return NotepadMessage(
         dbId: addedDoc.id,
         text: message,
         timePosted: timestamp,
@@ -129,8 +127,8 @@ class ApplicationState extends ChangeNotifier {
         userId: userId);
   }
 
-  StreamSubscription<QuerySnapshot>? _whiteboardSubscription;
-  List<WhiteboardMessage> _whiteboardMessages = [];
+  StreamSubscription<QuerySnapshot>? _notepadSubscription;
+  List<NotepadMessage> _notepadMessages = [];
 
-  List<WhiteboardMessage> get whiteboardMessages => _whiteboardMessages;
+  List<NotepadMessage> get notepadMessages => _notepadMessages;
 }

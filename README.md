@@ -2,6 +2,12 @@
 
 An app for the JASH apartment to keep track of various things.
 
+## Completed Features:
+- Notepad
+  - Allows users to create arbitrary notes to be displayed to other users
+  - Supports reordering, editing, deletion, and metadata viewing of notes
+
+
 ## Potential Features:
 
 - Food planning: 
@@ -17,4 +23,3 @@ An app for the JASH apartment to keep track of various things.
 - Daily emotion check-in
 - Listonic/splitwise clone
 - Google Calendar functionality (see when H & J are out on Saturday)
-- Whiteboard - general

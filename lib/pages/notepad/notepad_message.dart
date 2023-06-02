@@ -1,5 +1,5 @@
-class WhiteboardMessage {
-  WhiteboardMessage(
+class NotepadMessage {
+  NotepadMessage(
       {required this.timePosted,
       required this.username,
       required this.userId,

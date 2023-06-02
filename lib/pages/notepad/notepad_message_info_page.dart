@@ -2,27 +2,27 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:jash/pages/whiteboard/whiteboard_message.dart';
+import 'package:jash/pages/notepad/notepad_message.dart';
 
-class WhiteboardMesssageInfoPage extends StatefulWidget {
-  const WhiteboardMesssageInfoPage(
+class NotepadMessageInfoPage extends StatefulWidget {
+  const NotepadMessageInfoPage(
       {super.key,
       required this.message,
       required this.editMessage,
       required this.deleteMessage});
 
-  final WhiteboardMessage message;
-  final FutureOr<void> Function(WhiteboardMessage message) editMessage;
-  final FutureOr<void> Function(WhiteboardMessage message) deleteMessage;
+  final NotepadMessage message;
+  final FutureOr<void> Function(NotepadMessage message) editMessage;
+  final FutureOr<void> Function(NotepadMessage message) deleteMessage;
 
   @override
-  State<WhiteboardMesssageInfoPage> createState() =>
-      _WhiteboardMesssageInfoPageState();
+  State<NotepadMessageInfoPage> createState() =>
+      _NotepadMessageInfoPageState();
 }
 
-class _WhiteboardMesssageInfoPageState
-    extends State<WhiteboardMesssageInfoPage> {
-  final _formKey = GlobalKey<FormState>(debugLabel: '_WhiteboardState');
+class _NotepadMessageInfoPageState
+    extends State<NotepadMessageInfoPage> {
+  final _formKey = GlobalKey<FormState>(debugLabel: '_NotepadMessageInfoPageState');
   late TextEditingController _controller;
 
   @override
@@ -64,6 +64,7 @@ class _WhiteboardMesssageInfoPageState
                 ),
               ],
             ),
+            // TODO last editor, when
             const SizedBox(
               height: 16,
             ),
@@ -76,7 +77,7 @@ class _WhiteboardMesssageInfoPageState
                         onPressed: widget.message.text == value.text
                             ? null
                             : () {
-                                widget.editMessage(WhiteboardMessage(
+                                widget.editMessage(NotepadMessage(
                                     timePosted: widget.message.timePosted,
                                     username: widget.message.username,
                                     userId: widget.message.userId,

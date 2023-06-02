@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jash/app_state.dart';
 import 'package:jash/pages/profile_page.dart';
-import 'package:jash/pages/whiteboard/whiteboard_page.dart';
+import 'package:jash/pages/notepad/notepad_page.dart';
 import 'package:provider/provider.dart';
 import 'package:scroll_navigation/scroll_navigation.dart';
 
@@ -13,7 +13,7 @@ class MainPage extends StatelessWidget {
     return ScrollNavigation(
       items: const [
         ScrollNavigationItem(
-          title: 'Whiteboard',
+          title: 'Notepad',
           icon: Icon(Icons.edit_note),
         ),
         ScrollNavigationItem(
@@ -24,12 +24,12 @@ class MainPage extends StatelessWidget {
       pages: [
         Consumer<ApplicationState>(builder: (context, appState, _) {
           if (appState.loggedIn) {
-            return WhiteboardPage(
-              addMessage: (m) => appState.addWhiteboardMessage(m),
-              reorderMessages: (ms) => appState.updateWhiteboardMessagesOrder(ms),
-              deleteMessage: (m) => appState.deleteWhiteboardMessage(m),
-              editMessage: (m) => appState.updateWhiteboardMessage(m),
-              messages: appState.whiteboardMessages,
+            return NotepadPage(
+              addMessage: (m) => appState.addNotepadMessage(m),
+              reorderMessages: (ms) => appState.updateNotepadMessagesOrder(ms),
+              deleteMessage: (m) => appState.deleteNotepadMessage(m),
+              editMessage: (m) => appState.updateNotepadMessage(m),
+              messages: appState.notepadMessages,
             );
           } else {
             return const Column(

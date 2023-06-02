@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:flutter/material.dart';
-import 'package:jash/pages/whiteboard/whiteboard_message_info_page.dart';
-import 'package:jash/pages/whiteboard/whiteboard_message.dart';
+import 'package:jash/pages/notepad/notepad_message_info_page.dart';
+import 'package:jash/pages/notepad/notepad_message.dart';
 import 'package:jash/widgets/widgets.dart';
 
-class WhiteboardPage extends StatefulWidget {
-  const WhiteboardPage(
+class NotepadPage extends StatefulWidget {
+  const NotepadPage(
       {super.key,
       required this.addMessage,
       required this.messages,
@@ -16,18 +16,18 @@ class WhiteboardPage extends StatefulWidget {
       required this.deleteMessage});
 
   final FutureOr<void> Function(String message) addMessage;
-  final FutureOr<void> Function(List<WhiteboardMessage> message)
+  final FutureOr<void> Function(List<NotepadMessage> message)
       reorderMessages;
-  final FutureOr<void> Function(WhiteboardMessage message) editMessage;
-  final FutureOr<void> Function(WhiteboardMessage message) deleteMessage;
-  final List<WhiteboardMessage> messages;
+  final FutureOr<void> Function(NotepadMessage message) editMessage;
+  final FutureOr<void> Function(NotepadMessage message) deleteMessage;
+  final List<NotepadMessage> messages;
 
   @override
-  State<WhiteboardPage> createState() => _WhiteboardPageState();
+  State<NotepadPage> createState() => _NotepadPageState();
 }
 
-class _WhiteboardPageState extends State<WhiteboardPage> {
-  final _formKey = GlobalKey<FormState>(debugLabel: '_WhiteboardState');
+class _NotepadPageState extends State<NotepadPage> {
+  final _formKey = GlobalKey<FormState>(debugLabel: '_NotepadPageState');
   final _controller = TextEditingController();
 
   @override
@@ -53,7 +53,7 @@ class _WhiteboardPageState extends State<WhiteboardPage> {
                     child: TextFormField(
                       controller: _controller,
                       decoration: const InputDecoration(
-                        hintText: 'Write on the whiteboard...',
+                        hintText: 'Write on the notepad...',
                       ),
                     ),
                   ),
@@ -86,7 +86,7 @@ class _WhiteboardPageState extends State<WhiteboardPage> {
                     newIndex -= 1;
                   }
 
-                  WhiteboardMessage item = widget.messages.removeAt(oldIndex);
+                  NotepadMessage item = widget.messages.removeAt(oldIndex);
                   widget.messages.insert(newIndex, item);
                   widget.reorderMessages(widget.messages);
                 });
@@ -99,7 +99,7 @@ class _WhiteboardPageState extends State<WhiteboardPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => WhiteboardMesssageInfoPage(
+                          builder: (_) => NotepadMessageInfoPage(
                             message: e,
                             editMessage: widget.editMessage,
                             deleteMessage: widget.deleteMessage,
