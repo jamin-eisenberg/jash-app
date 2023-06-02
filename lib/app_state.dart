@@ -39,10 +39,16 @@ class ApplicationState extends ChangeNotifier {
             .listen((snapshot) {
           _whiteboardMessages = [];
           for (final document in snapshot.docs) {
+            Map<String, dynamic> data = document.data();
             _whiteboardMessages.add(
               WhiteboardMessage(
-                  dbId: document.id,
-                  message: document.data()['text'] as String),
+                dbId: document.id,
+                text: data['text'] as String,
+                userId: data['userId'] as String,
+                username: data['name'] as String,
+                timePosted: DateTime.fromMillisecondsSinceEpoch(
+                    data['timestamp'] as int),
+              ),
             );
           }
           notifyListeners();
@@ -56,7 +62,7 @@ class ApplicationState extends ChangeNotifier {
     });
   }
 
-  void updateWhiteboardMessageOrder(List<WhiteboardMessage> messages) {
+  void updateWhiteboardMessagesOrder(List<WhiteboardMessage> messages) {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
@@ -70,6 +76,26 @@ class ApplicationState extends ChangeNotifier {
     });
   }
 
+  void updateWhiteboardMessage(WhiteboardMessage message) async {
+    if (!_loggedIn) {
+      throw Exception('Must be logged in');
+    }
+
+    var messageDoc = FirebaseFirestore.instance
+        .doc('whiteboard/messages/messages/${message.dbId}');
+    messageDoc.update({'text': message.text});
+  }
+
+  void deleteWhiteboardMessage(WhiteboardMessage message) async {
+    if (!_loggedIn) {
+      throw Exception('Must be logged in');
+    }
+
+    var messageDoc = FirebaseFirestore.instance
+        .doc('whiteboard/messages/messages/${message.dbId}');
+    messageDoc.delete();
+  }
+
   Future<WhiteboardMessage> addWhiteboardMessage(String message) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
@@ -77,24 +103,30 @@ class ApplicationState extends ChangeNotifier {
 
     // TODO allow deletion/editing/info
 
-    var highestOrderDoc = FirebaseFirestore.instance.doc('whiteboard/highestOrder');
-    var messagesCollection = FirebaseFirestore.instance.collection('whiteboard/messages/messages');
+    var messagesCollection =
+        FirebaseFirestore.instance.collection('whiteboard/messages/messages');
 
-    var currentHighestOrderDoc = await highestOrderDoc.get();
-    int currentHighestOrder = currentHighestOrderDoc.data()?['value'] ?? 0;
+    int currentHighestOrder = (await messagesCollection.count().get()).count - 1;
+
+    int order = currentHighestOrder + 1;
+    DateTime timestamp = DateTime.now();
+    String username = FirebaseAuth.instance.currentUser!.displayName ?? "";
+    String userId = FirebaseAuth.instance.currentUser!.uid;
 
     var addedDoc = await messagesCollection.add(<String, dynamic>{
       'text': message,
-      'order': currentHighestOrder + 1,
-      'timestamp': DateTime.now().millisecondsSinceEpoch,
-      'name': FirebaseAuth.instance.currentUser!.displayName,
-      'userId': FirebaseAuth.instance.currentUser!.uid,
+      'order': order,
+      'timestamp': timestamp.millisecondsSinceEpoch,
+      'name': username,
+      'userId': userId,
     });
 
-    await highestOrderDoc
-        .set(<String, dynamic>{'value': currentHighestOrder + 1});
-
-    return WhiteboardMessage(dbId: addedDoc.id, message: message);
+    return WhiteboardMessage(
+        dbId: addedDoc.id,
+        text: message,
+        timePosted: timestamp,
+        username: username,
+        userId: userId);
   }
 
   StreamSubscription<QuerySnapshot>? _whiteboardSubscription;

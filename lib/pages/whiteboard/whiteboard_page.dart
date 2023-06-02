@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:jash/pages/whiteboard/whiteboard_message_info_page.dart';
 import 'package:jash/pages/whiteboard/whiteboard_message.dart';
 import 'package:jash/widgets/widgets.dart';
 
@@ -9,11 +11,15 @@ class WhiteboardPage extends StatefulWidget {
       {super.key,
       required this.addMessage,
       required this.messages,
-      required this.reorderMessages});
+      required this.reorderMessages,
+      required this.editMessage,
+      required this.deleteMessage});
 
   final FutureOr<void> Function(String message) addMessage;
   final FutureOr<void> Function(List<WhiteboardMessage> message)
       reorderMessages;
+  final FutureOr<void> Function(WhiteboardMessage message) editMessage;
+  final FutureOr<void> Function(WhiteboardMessage message) deleteMessage;
   final List<WhiteboardMessage> messages;
 
   @override
@@ -25,7 +31,29 @@ class _WhiteboardPageState extends State<WhiteboardPage> {
   final _controller = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Prevent default event handler
+    document.onContextMenu.listen((event) => event.preventDefault());
+  }
+
+  @override
   Widget build(BuildContext context) {
+    messageLongPressRightClickHandler(WhiteboardMessage message) {
+      return () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => WhiteboardMesssageInfoPage(
+              message: message,
+              editMessage: widget.editMessage,
+              deleteMessage: widget.deleteMessage,
+            ),
+          ),
+        );
+      };
+    }
+
     return SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,7 +108,12 @@ class _WhiteboardPageState extends State<WhiteboardPage> {
               },
               children: [
                 for (var e in widget.messages)
-                  ListTile(key: Key(e.dbId), title: Text(e.message))
+                  GestureDetector(
+                    key: Key(e.dbId),
+                    onLongPress: messageLongPressRightClickHandler(e),
+                    onSecondaryTap: messageLongPressRightClickHandler(e),
+                    child: ListTile(title: Text(e.text)),
+                  ),
               ],
             ),
           ),

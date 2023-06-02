@@ -26,7 +26,9 @@ class MainPage extends StatelessWidget {
           if (appState.loggedIn) {
             return WhiteboardPage(
               addMessage: (m) => appState.addWhiteboardMessage(m),
-              reorderMessages: (ms) => appState.updateWhiteboardMessageOrder(ms),
+              reorderMessages: (ms) => appState.updateWhiteboardMessagesOrder(ms),
+              deleteMessage: (m) => appState.deleteWhiteboardMessage(m),
+              editMessage: (m) => appState.updateWhiteboardMessage(m),
               messages: appState.whiteboardMessages,
             );
           } else {
