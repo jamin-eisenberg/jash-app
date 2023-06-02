@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:jash/widgets/widgets.dart';
 
 class WhiteboardPage extends StatefulWidget {
-  const WhiteboardPage({super.key, required this.addMessage, required this.messages});
+  const WhiteboardPage(
+      {super.key, required this.addMessage, required this.messages});
 
   final FutureOr<void> Function(String message) addMessage;
   final List<String> messages;
@@ -39,11 +40,12 @@ class _WhiteboardPageState extends State<WhiteboardPage> {
                   ),
                   StyledButton(
                     onPressed: () async {
-                        await widget.addMessage(_controller.text);
+                      var text = _controller.text;
                       _controller.clear();
+                      await widget.addMessage(text);
                     },
-                    child: Row(
-                      children: const [
+                    child: const Row(
+                      children: [
                         Icon(Icons.add),
                         SizedBox(width: 4),
                         Text('Add'),
@@ -57,7 +59,7 @@ class _WhiteboardPageState extends State<WhiteboardPage> {
           const SizedBox(
             height: 8,
           ),
-          // for (var e in widget.messages) Paragraph("${e.name}: ${e.message}"),
+          for (var e in widget.messages) Paragraph(e),
           const SizedBox(
             height: 8,
           ),

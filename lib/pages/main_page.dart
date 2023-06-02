@@ -22,12 +22,23 @@ class MainPage extends StatelessWidget {
         ),
       ],
       pages: [
-        Consumer<ApplicationState>(
-            builder: (context, appState, _) {
-              if (appState.loggedIn) {
-                WhiteboardPage(messages: appState., )
-              }
-            }),
+        Consumer<ApplicationState>(builder: (context, appState, _) {
+          if (appState.loggedIn) {
+            return WhiteboardPage(
+              addMessage: (m) => appState.addWhiteboardMessage(m),
+              messages: appState.whiteboardMessages,
+            );
+          } else {
+            return const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: Text('You must be signed in to use this feature.'),
+                )
+              ],
+            );
+          }
+        }),
         const ProfilePage()
       ],
       physics: true,
@@ -36,58 +47,3 @@ class MainPage extends StatelessWidget {
     );
   }
 }
-
-// class _MainPageState extends State<MainPage> {
-//   var selectedIndex = 0;
-//
-//   Widget _selectedPage() {
-//     switch (selectedIndex) {
-//       case 0:
-//         return HomePage();
-//       case 1:
-//         return ProfilePage();
-//       default:
-//         throw UnimplementedError('no widget for $selectedIndex');
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     Widget page = _selectedPage();
-//
-//     return LayoutBuilder(builder: (context, constraints) {
-//       return Scaffold(
-//         body: Column(
-//           children: [
-//             Expanded(
-//               child: Container(
-//                 child: page,
-//               ),
-//             ),
-//             SafeArea(
-//               child: BottomNavigationBar(
-//                 // extended: constraints.maxWidth >= 600,
-//                 items: const [
-//                   BottomNavigationBarItem(
-//                     icon: Icon(Icons.home),
-//                     label: 'Home',
-//                   ),
-//                   BottomNavigationBarItem(
-//                     icon: Icon(Icons.account_circle),
-//                     label: 'Profile',
-//                   ),
-//                 ],
-//                 currentIndex: selectedIndex,
-//                 onTap: (value) {
-//                   setState(() {
-//                     selectedIndex = value;
-//                   });
-//                 },
-//               ),
-//             ),
-//           ],
-//         ),
-//       );
-//     });
-//   }
-// }

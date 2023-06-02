@@ -29,35 +29,57 @@ class ApplicationState extends ChangeNotifier {
     FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
         _loggedIn = true;
+        _whiteboardSubscription = FirebaseFirestore.instance
+            .collection('whiteboard')
+            .doc('messages')
+            .collection('messages')
+            .orderBy('order')
+            .snapshots()
+            .listen((snapshot) {
+          _whiteboardMessages = [];
+          for (final document in snapshot.docs) {
+            _whiteboardMessages.add(
+              document.data()['text'] as String,
+            );
+          }
+          notifyListeners();
+        });
       } else {
         _loggedIn = false;
+        _whiteboardMessages = [];
+        _whiteboardSubscription?.cancel();
       }
       notifyListeners();
     });
   }
 
-  Future<void> addWhiteboardMessage(String message) {
+  Future<void> addWhiteboardMessage(String message) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
 
+    // TODO allow re-ordering
+    // TODO convert to atomic with runTransaction
+    // TODO lexical ordering
     var whiteboardCollection =
         FirebaseFirestore.instance.collection('whiteboard');
     var highestOrderDoc = whiteboardCollection.doc('highestOrder');
+    var messagesDoc = whiteboardCollection.doc('messages');
+    var messagesCollection = messagesDoc.collection('messages');
 
-    return highestOrderDoc.get().then((currentHighestOrderDoc) {
-      int currentHighestOrder = currentHighestOrderDoc.data()?['value'] ?? 0;
+    var currentHighestOrderDoc = await highestOrderDoc.get();
+    int currentHighestOrder = currentHighestOrderDoc.data()?['value'] ?? 0;
 
-      return whiteboardCollection.add(<String, dynamic>{
-        'text': message,
-        'order': highestOrderDoc
-            .set(<String, dynamic>{'value': currentHighestOrder + 1}),
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-        'name': FirebaseAuth.instance.currentUser!.displayName,
-        'userId': FirebaseAuth.instance.currentUser!.uid,
-      }).then((_) => highestOrderDoc
-          .set(<String, dynamic>{'value': currentHighestOrder + 1}));
+    await messagesCollection.add(<String, dynamic>{
+      'text': message,
+      'order': currentHighestOrder + 1,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'name': FirebaseAuth.instance.currentUser!.displayName,
+      'userId': FirebaseAuth.instance.currentUser!.uid,
     });
+
+    highestOrderDoc
+        .set(<String, dynamic>{'value': currentHighestOrder + 1});
   }
 
   StreamSubscription<QuerySnapshot>? _whiteboardSubscription;
