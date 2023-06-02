@@ -83,7 +83,12 @@ class ApplicationState extends ChangeNotifier {
 
     var messageDoc = FirebaseFirestore.instance
         .doc('notepad/messages/messages/${message.dbId}');
-    messageDoc.update({'text': message.text});
+    messageDoc.update({
+      'text': message.text,
+      'timestamp': message.timePosted.millisecondsSinceEpoch,
+      'name': message.username,
+      'userId': message.userId
+    });
   }
 
   void deleteNotepadMessage(NotepadMessage message) async {
@@ -104,7 +109,8 @@ class ApplicationState extends ChangeNotifier {
     var messagesCollection =
         FirebaseFirestore.instance.collection('notepad/messages/messages');
 
-    int currentHighestOrder = (await messagesCollection.count().get()).count - 1;
+    int currentHighestOrder =
+        (await messagesCollection.count().get()).count - 1;
 
     int order = currentHighestOrder + 1;
     DateTime timestamp = DateTime.now();

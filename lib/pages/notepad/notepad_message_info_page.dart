@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jash/pages/notepad/notepad_message.dart';
@@ -43,9 +44,9 @@ class _NotepadMessageInfoPageState
           children: [
             Tooltip(
                 message: '(User ID: ${widget.message.userId})',
-                child: Text('Created by: ${widget.message.username}')),
+                child: Text('Last edited by: ${widget.message.username}')),
             Text(
-                'Created on: ${DateFormat().format(widget.message.timePosted)}'),
+                'Last edited on: ${DateFormat().format(widget.message.timePosted)}'),
             Row(
               children: [
                 const Text(
@@ -64,7 +65,6 @@ class _NotepadMessageInfoPageState
                 ),
               ],
             ),
-            // TODO last editor, when
             const SizedBox(
               height: 16,
             ),
@@ -78,9 +78,9 @@ class _NotepadMessageInfoPageState
                             ? null
                             : () {
                                 widget.editMessage(NotepadMessage(
-                                    timePosted: widget.message.timePosted,
-                                    username: widget.message.username,
-                                    userId: widget.message.userId,
+                                    timePosted: DateTime.now(),
+                                    username: FirebaseAuth.instance.currentUser!.displayName ?? "",
+                                    userId: FirebaseAuth.instance.currentUser!.uid,
                                     dbId: widget.message.dbId,
                                     text: value.text));
                                 Navigator.pop(context);
