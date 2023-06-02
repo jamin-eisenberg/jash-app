@@ -1,11 +1,12 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:jash/widgets/meal_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../shared/utils.dart';
 
-final kToday = DateTime(2023, 6, 1);
+final kToday = DateTime.now();
 final kFirstDay = DateTime(kToday.year, kToday.month - 2, kToday.day);
 final kLastDay = DateTime(kToday.year, kToday.month + 2, kToday.day);
 
@@ -16,7 +17,8 @@ final meals = LinkedHashMap<DateTime, Meal>(
 
 final mealsSource = {
   for (var day in List.generate(6, (index) => index))
-    DateTime.utc(kToday.year, kToday.month, kToday.day - day): Meal('Meal $day')
+    DateTime.utc(kToday.year, kToday.month, kToday.day - day): Meal(
+        'Meal $day', {const Ingredient('chicken'): Quantity(5, Unit.ounce)})
 };
 
 class MealPlanningPage extends StatefulWidget {
@@ -29,9 +31,9 @@ class MealPlanningPage extends StatefulWidget {
 class MealPlanningPageState extends State<MealPlanningPage> {
   final CalendarFormat _calendarFormat = CalendarFormat.twoWeeks;
 
-  ValueNotifier<Meal?> _selectedMeal = ValueNotifier(null);
+  ValueNotifier<Meal?> _selectedMeal = ValueNotifier(meals[kToday]);
   DateTime _focusedDay = kToday;
-  DateTime? _selectedDay;
+  DateTime _selectedDay = kToday;
 
   @override
   void dispose() {
@@ -82,21 +84,38 @@ class MealPlanningPageState extends State<MealPlanningPage> {
             child: ValueListenableBuilder<Meal?>(
               valueListenable: _selectedMeal,
               builder: (context, value, _) {
-                return ListView.builder(
-                  itemCount: 1,
-                  itemBuilder: (context, index) {
-                    return Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 4.0,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: Text('${value?.title}'));
-                  },
-                );
+                if (value != null) {
+                  return Column(children: [
+                    Expanded(
+                        child: Container(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
+                              vertical: 4.0,
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(),
+                                borderRadius: BorderRadius.circular(12.0),
+                                color: Colors.blue),
+                            child: MealWidget(value))),
+                    ElevatedButton(
+                        onPressed: () => print("Edit"),
+                        child: const Text("Change Meal"))
+                  ]);
+                } else {
+                  return ElevatedButton(
+                    onPressed: () => setState(() {
+                      meals.putIfAbsent(
+                          _selectedDay,
+                          () => Meal("New Meal", {
+                                const Ingredient("Ing"): Quantity(1, Unit.pound)
+                              }));
+                      setState(() {
+                        _selectedMeal = ValueNotifier(meals[_selectedDay]);
+                      });
+                    }),
+                    child: const Text("Add Meal"),
+                  );
+                }
               },
             ),
           ),
