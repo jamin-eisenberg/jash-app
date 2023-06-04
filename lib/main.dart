@@ -71,19 +71,6 @@ final _router = GoRouter(
             ),
           ],
         ),
-        GoRoute(
-          path: 'profile',
-          builder: (context, state) {
-            return ProfileScreen(
-              providers: const [],
-              actions: [
-                SignedOutAction((context) {
-                  context.pushReplacement('/');
-                }),
-              ],
-            );
-          },
-        ),
       ],
     ),
   ],
