@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:jash/pages/notepad/notepad_message_info_page.dart';
@@ -29,13 +28,6 @@ class NotepadPage extends StatefulWidget {
 class _NotepadPageState extends State<NotepadPage> {
   final _formKey = GlobalKey<FormState>(debugLabel: '_NotepadPageState');
   final _controller = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    // Prevent default event handler
-    document.onContextMenu.listen((event) => event.preventDefault());
-  }
 
   @override
   Widget build(BuildContext context) {
